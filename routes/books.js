@@ -2,10 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-const slugify = require("slugify");
-
-let books = require("../books");
-
 const {
   createBook,
   bookList,

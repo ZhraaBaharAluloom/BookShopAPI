@@ -1,37 +1,50 @@
 let books = require("../books");
 const slugify = require("slugify");
+const { Book } = require("../db/models");
 
-exports.bookList = (req, res) => {
-  res.json(books);
-};
+exports.bookList = async (req, res) => {
+  try {
+    const books = await Book.findAll({
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
 
-exports.createBook = (req, res) => {
-  const id = books[books.length - 1].id + 1;
-  const slug = slugify(req.body.name, { lower: true });
-  const newBook = { id, slug, ...req.body };
-  books.push(newBook);
-  res.status(201).json(newBook);
-};
-
-exports.updateBook = (req, res) => {
-  const { bookId } = req.params;
-  const foundBook = books.find((book) => book.id === +bookId);
-  if (foundBook) {
-    for (const key in req.body) foundBook[key] = req.body[key];
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "book is not found" });
+    res.json(books);
+  } catch (error) {
+    res.status(500).json({ message: "Book is NOT found!" });
   }
 };
 
-exports.bookDelete = (req, res) => {
-  const { bookId } = req.params;
-  const foundBook = books.find((book) => book.id === +bookId);
+exports.createBook = async (req, res) => {
+  try {
+    const newBook = await Book.create(req.body);
+    res.status(201).json(newBook);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
-  if (foundBook) {
-    books = books.filter((book) => book.id != +bookId);
-    res.status(204).end();
-  } else {
-    res.status(404).json({ message: "Not found" });
+exports.updateBook = async (req, res) => {
+  const { bookId } = req.params;
+  try {
+    const foundBook = await Book.findByPk(bookId);
+    if (foundBook) {
+      await foundBook.update(req.body);
+      res.status(204).end();
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Nope, it can NOT be that cheep" });
+  }
+};
+
+exports.bookDelete = async (req, res) => {
+  const { bookId } = req.params;
+  try {
+    const foundBook = await Book.findByPk(bookId);
+    if (foundBook) {
+      await foundBook.destroy();
+      res.status(204).end();
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Oops" });
   }
 };
