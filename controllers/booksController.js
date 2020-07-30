@@ -1,50 +1,53 @@
-let books = require("../books");
-const slugify = require("slugify");
-const { Book } = require("../db/models");
+//Data
+const { Book, Vendor } = require("../db/models");
 
-exports.bookList = async (req, res) => {
+exports.fetchBook = async (bookId, next) => {
+  try {
+    const book = await Book.findByPk(bookId);
+    return book;
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.bookList = async (req, res, next) => {
   try {
     const books = await Book.findAll({
       attributes: { exclude: ["createdAt", "updatedAt"] },
+      include: [
+        {
+          model: Vendor,
+          as: "vendor",
+          attributes: ["name"],
+        },
+      ],
     });
 
     res.json(books);
   } catch (error) {
-    res.status(500).json({ message: "Book is NOT found!" });
+    next(error);
   }
 };
 
-exports.createBook = async (req, res) => {
+exports.updateBook = async (req, res, next) => {
   try {
-    const newBook = await Book.create(req.body);
-    res.status(201).json(newBook);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-exports.updateBook = async (req, res) => {
-  const { bookId } = req.params;
-  try {
-    const foundBook = await Book.findByPk(bookId);
-    if (foundBook) {
-      await foundBook.update(req.body);
-      res.status(204).end();
+    if (req.file) {
+      req.body.image = `${req.protocol}://${req.get("host")}/media/${
+        req.file.filename
+      }`;
     }
+    await req.book.update(req.body);
+    res.status(204).end();
   } catch (error) {
-    res.status(500).json({ message: "Nope, it can NOT be that cheep" });
+    next(error);
   }
 };
 
-exports.bookDelete = async (req, res) => {
-  const { bookId } = req.params;
+exports.bookDelete = async (req, res, next) => {
   try {
-    const foundBook = await Book.findByPk(bookId);
-    if (foundBook) {
-      await foundBook.destroy();
-      res.status(204).end();
-    }
+    await req.book.destroy();
+    res.status(204).end();
   } catch (error) {
-    res.status(500).json({ message: "Oops" });
+    next(error);
   }
 };

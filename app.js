@@ -4,27 +4,39 @@ const bodyParser = require("body-parser");
 const bookRouters = require("./routes/books");
 const db = require("./db/db");
 const { Book } = require("./db/models");
+const path = require("path");
+const vendorRoutes = require("./routes/vendors");
 
 const app = express();
-
-const run = async () => {
-  try {
-    await db.sync();
-    console.log("Connection to the database successful!");
-    // const newBook = await Book.create({ name: "Some book" });
-    // console.log(newBook.toJSON());
-    // const books = await Book.findAll();
-    // books.forEach((book) => console.log(book.toJSON()));
-  } catch (error) {
-    console.error("Error connecting to the database: ", error);
-  }
-};
-
-run();
-
 app.use(cors());
 app.use(bodyParser.json());
 
+//Routers
+app.use("/vendors", vendorRoutes);
 app.use("/books", bookRouters);
+app.use("/media", express.static(path.join(__dirname, "media")));
 
-app.listen(8000, () => {});
+//Not Found Paths
+app.use((req, res, next) => {
+  const error = new Error("Path Not Found");
+  error.status = 404;
+  next(error);
+});
+//Error Handling Middleware
+app.use((err, req, res, next) => {
+  res.status(err.status || 500);
+  res.json(err.message || "Internal Server Error");
+});
+
+const run = async () => {
+  try {
+    await db.sync({ alter: true });
+    console.log("Connection to the database successful!");
+  } catch (error) {
+    console.error("Error connecting to the database: ", error);
+  }
+  await app.listen(8000, () => {
+    console.log("This application is running on localhost:8000");
+  });
+};
+run();

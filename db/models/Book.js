@@ -1,4 +1,5 @@
 const { DataTypes, Model } = require("sequelize");
+const SequelizeSlugify = require("sequelize-slugify");
 
 const db = require("../db");
 
@@ -23,7 +24,14 @@ Book.init(
     author: {
       type: DataTypes.STRING,
     },
+    slug: {
+      type: DataTypes.STRING,
+      unique: true,
+    },
     description: {
+      type: DataTypes.STRING,
+    },
+    released: {
       type: DataTypes.STRING,
     },
     delivery: {
@@ -31,12 +39,16 @@ Book.init(
     },
     image: {
       type: DataTypes.STRING,
-      allowNull: false,
     },
   },
   {
     sequelize: db,
   }
 );
+
+SequelizeSlugify.slugifyModel(Book, {
+  source: ["name"],
+  slugOptions: { lower: true },
+});
 
 module.exports = Book;
