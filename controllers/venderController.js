@@ -18,7 +18,7 @@ exports.listVendor = async (req, res, next) => {
         {
           model: Book,
           as: "books",
-          attributes: { exclude: ["createdAt", "updatedAt"] },
+          attributes: ["id"],
         },
       ],
     });

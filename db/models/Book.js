@@ -34,9 +34,7 @@ Book.init(
     released: {
       type: DataTypes.STRING,
     },
-    delivery: {
-      type: DataTypes.STRING,
-    },
+   
     image: {
       type: DataTypes.STRING,
     },
