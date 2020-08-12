@@ -33,6 +33,7 @@ exports.jwtStrategy = new JWTStrategy(
     if (Date.now() > jwtPayload.expires) {
       return done(null, false);
     } else {
+      const user = await User.findByPk(jwtPayload.id);
       return done(null, user);
     }
   }
