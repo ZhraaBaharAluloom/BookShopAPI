@@ -5,19 +5,19 @@ const path = require("path");
 const db = require("./db/db");
 const { Book } = require("./db/models");
 const passport = require("passport");
-const { LocalStrategy } = require("./middleware/passport");
+const { LocalStrategy, jwtStrategy } = require("./middleware/passport");
 
 // Routes
 const bookRouters = require("./routes/books");
 const vendorRoutes = require("./routes/vendors");
 const usersRoutes = require("./routes/users");
 
-
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
-app.use(passport.initialize())
-passport.use(LocalStrategy)
+app.use(passport.initialize());
+passport.use(LocalStrategy);
+passport.use(jwtStrategy);
 
 //Routers
 app.use("/vendors", vendorRoutes);
@@ -32,7 +32,6 @@ app.use((req, res, next) => {
   error.status = 404;
   next(error);
 });
-
 
 //Error Handling Middleware
 app.use((err, req, res, next) => {
