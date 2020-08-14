@@ -46,8 +46,9 @@ const run = async () => {
   } catch (error) {
     console.error("Error connecting to the database: ", error);
   }
-  await app.listen(8000, () => {
-    console.log("This application is running on localhost:8000");
+  const PORT = process.env.PORT || 8000;
+  await app.listen(PORT, () => {
+    console.log(`This application is running on localhost:${PORT}`);
   });
 };
 run();
