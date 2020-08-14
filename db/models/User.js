@@ -9,36 +9,32 @@ User.init(
     username: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique : {
-        args:true,
-        msg: "Username  already exists"
-      }
+      unique: {
+        args: true,
+        msg: "Username  already exists",
+      },
     },
     password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      role:{
-    type: DataTypes.STRING,
-    defaultValue: "customer",
-      },
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: "vendor",
+    },
     firstName: {
-        type: DataTypes.STRING,
-      },
+      type: DataTypes.STRING,
+    },
     lastName: {
-        type: DataTypes.STRING,
-      },
+      type: DataTypes.STRING,
+    },
     email: {
-        type: DataTypes.STRING,
-      },
-
-
-  
+      type: DataTypes.STRING,
+    },
   },
   {
     sequelize: db,
   }
 );
-
 
 module.exports = User;

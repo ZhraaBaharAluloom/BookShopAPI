@@ -46,10 +46,24 @@ router.post(
   createVendor
 );
 
-router.post("/:vendorId/books", upload.single("image"), createBook);
+router.post(
+  "/:vendorId/books",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  createBook
+);
 
-router.put("/:vendorId", upload.single("image"), updateVendor);
+router.put(
+  "/:vendorId",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  updateVendor
+);
 
-router.delete("/:vendorId", deleteVendor);
+router.delete(
+  "/:vendorId",
+  passport.authenticate("jwt", { session: false }),
+  deleteVendor
+);
 
 module.exports = router;

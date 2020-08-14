@@ -3,6 +3,7 @@ const express = require("express");
 const router = express.Router();
 
 const multer = require("multer");
+const passport = require("passport");
 
 const {
   bookList,
@@ -36,8 +37,17 @@ router.param("bookId", async (req, res, next, bookId) => {
 
 router.get("/", bookList);
 
-router.put("/:bookId", upload.single("image"), updateBook);
+router.put(
+  "/:bookId",
+  passport.authenticate("jwt", { session: false }),
+  upload.single("image"),
+  updateBook
+);
 
-router.delete("/:bookId", bookDelete);
+router.delete(
+  "/:bookId",
+  passport.authenticate("jwt", { session: false }),
+  bookDelete
+);
 
 module.exports = router;

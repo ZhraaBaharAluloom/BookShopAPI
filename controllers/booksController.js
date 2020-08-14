@@ -3,7 +3,13 @@ const { Book, Vendor } = require("../db/models");
 
 exports.fetchBook = async (bookId, next) => {
   try {
-    const book = await Book.findByPk(bookId);
+    const book = await Book.findByPk(bookId, {
+      include: {
+        model: Vendor,
+        as: "vendor",
+        attributes: ["userId"],
+      },
+    });
     return book;
   } catch (error) {
     next(error);
@@ -31,13 +37,19 @@ exports.bookList = async (req, res, next) => {
 
 exports.updateBook = async (req, res, next) => {
   try {
-    if (req.file) {
-      req.body.image = `${req.protocol}://${req.get("host")}/media/${
-        req.file.filename
-      }`;
+    if (req.user.id === req.book.vendor.userId) {
+      if (req.file) {
+        req.body.image = `${req.protocol}://${req.get("host")}/media/${
+          req.file.filename
+        }`;
+      }
+      await req.book.update(req.body);
+      res.status(204).end();
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
     }
-    await req.book.update(req.body);
-    res.status(204).end();
   } catch (error) {
     next(error);
   }
@@ -45,8 +57,14 @@ exports.updateBook = async (req, res, next) => {
 
 exports.bookDelete = async (req, res, next) => {
   try {
-    await req.book.destroy();
-    res.status(204).end();
+    if (req.user.id === req.book.vendor.userId) {
+      await req.book.destroy();
+      res.status(204).end();
+    } else {
+      const err = new Error("Unauthorized");
+      err.status = 401;
+      next(err);
+    }
   } catch (error) {
     next(error);
   }

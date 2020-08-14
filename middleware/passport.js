@@ -30,7 +30,7 @@ exports.jwtStrategy = new JWTStrategy(
     secretOrKey: JWT_SECRET,
   },
   async (jwtPayload, done) => {
-    if (Date.now() > jwtPayload.expires) {
+    if (Date.now() > jwtPayload.exp) {
       return done(null, false);
     } else {
       const user = await User.findByPk(jwtPayload.id);
