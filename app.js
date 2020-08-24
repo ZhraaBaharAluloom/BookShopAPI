@@ -11,6 +11,7 @@ const { LocalStrategy, jwtStrategy } = require("./middleware/passport");
 const bookRouters = require("./routes/books");
 const vendorRoutes = require("./routes/vendors");
 const usersRoutes = require("./routes/users");
+const orderRoutes = require("./routes/orders");
 
 const app = express();
 app.use(cors());
@@ -23,6 +24,7 @@ passport.use(jwtStrategy);
 app.use("/vendors", vendorRoutes);
 app.use("/books", bookRouters);
 app.use(usersRoutes);
+app.use(orderRoutes);
 
 app.use("/media", express.static(path.join(__dirname, "media")));
 
@@ -41,7 +43,7 @@ app.use((err, req, res, next) => {
 
 const run = async () => {
   try {
-    await db.sync();
+    await db.sync({ alter: true });
   } catch (error) {
     console.error("Error connecting to the database: ", error);
   }

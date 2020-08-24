@@ -83,7 +83,9 @@ exports.updateVendor = async (req, res, next) => {
           "host"
         )}/media/${req.file.filename}`;
       }
+
       await req.vendor.update(req.body);
+
       res.status(204).end();
     } else {
       const err = new Error("Unauthorized");

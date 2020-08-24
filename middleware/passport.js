@@ -20,7 +20,7 @@ exports.LocalStrategy = new LocalStrategy(async (username, password, done) => {
       : false;
     return passwordMatched ? done(null, user) : done(null, false);
   } catch (error) {
-    done(error);
+    return done(error);
   }
 });
 
